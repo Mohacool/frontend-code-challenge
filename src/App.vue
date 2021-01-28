@@ -5,9 +5,15 @@
             Maximum Combat Points
         </small>
     </label>
-    <input type="text" class="input" placeholder="Pokemon or type" @input="change" />
+    <input type="text" class="input" placeholder="Pokemon or type" @input="change" v-model="search" />
     <div class="loader"></div>
     <ul class="suggestions">
+
+        /*  ===== start */
+        
+        
+        
+        /*  ===== end */
         <li>
             <img
                 src="http://assets.pokemon.com/assets/cms2/img/pokedex/full/025.png"
@@ -40,10 +46,60 @@ const URL_PATH =
 
 export default {
     name: 'App',
-    methods: {
-        change(){
-            alert('change');
+    
+    data () {
+        return {
+            search: '',
+            resultsJSON : {} 
         }
     }
+    ,
+    methods: {
+        change(){
+            console.log(this.search);
+            
+            // Return a function 
+            console.log(this.test);
+
+            console.log('fetching');
+            fetch(URL_PATH).then(response => response.json()).then(
+                json =>{
+                    // filter this.database by this.search
+
+                    let by_name = json.filter(poke => poke.Name.toLowerCase().includes(this.search.toLowerCase()));
+                    
+                    let by_type = json.filter(poke => poke.Types.findIndex(e => e.toLowerCase().includes(this.search.toLowerCase()))!=-1);
+                    
+
+                    let results = by_name.concat(by_type);
+                    console.log(results);
+
+                    this.resultsJSON = results;
+
+                    // final step return results
+                    this.database = json
+                    //console.log(this.database)
+                    
+                }
+            )
+        }
+    },
+    computed: {
+        filteredList() {
+
+            return this.database.filter(pokemon => {
+                return pokemon.name.toLowerCase().includes(this.search.toLowerCase())
+            })
+        },
+
+        test(){
+            return 'test'
+        }
+    },
+    created() {
+        
+    }
+    
+    
 };
 </script>
