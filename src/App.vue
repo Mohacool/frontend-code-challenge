@@ -5,7 +5,7 @@
             Maximum Combat Points
         </small>
     </label>
-    <input type="text" class="input" placeholder="Pokemon or type" />
+    <input type="text" class="input" placeholder="Pokemon or type" @input="change" />
     <div class="loader"></div>
     <ul class="suggestions">
         <li>
@@ -40,5 +40,10 @@ const URL_PATH =
 
 export default {
     name: 'App',
+    methods: {
+        change(){
+            alert('change');
+        }
+    }
 };
 </script>
