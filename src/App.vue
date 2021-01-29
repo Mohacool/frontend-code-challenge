@@ -5,19 +5,19 @@
             Maximum Combat Points
         </small>
     </label>
-    <input type="text" class="input" placeholder="Pokemon or type" @input="change" v-model="search" />
+    <input type="text" class="input" placeholder="Pokemon or type" @input="searching" v-model="search" />
     <div class="loader" v-bind:style="{ display: loader_display }"></div>
     <ul class="suggestions">
 
         
-        <div v-for="poke in resultsJSON" v-bind:key="poke">
+        <div v-for="poke in resultsJSON" v-bind:key="poke" v-bind:style="{ display: pokemon_display }">
             
             <li>
                 <img
                     v-bind:src="poke.img"
                 />
                 <div class="info">
-                    <h1>{{poke.Name}}</h1>
+                    <h1 v-html="highlight(poke.Name)"></h1>
                     <span v-for="type in poke.Types" v-bind:key="type">
                         <span :class="['type ' + type.toLowerCase()]">{{type}}</span>
                     </span>
@@ -26,20 +26,7 @@
             </li>
         </div>
         
-        
-        
-        <li>
-            <img
-                src="http://assets.pokemon.com/assets/cms2/img/pokedex/full/025.png"
-                alt="Pikachu"
-            />
-            <div class="info">
-                <h1><span class="hl">Pika</span>chu</h1>
-                <span class="type electric">Electric</span>
-                <span class="type normal">Normal</span>
-            </div>
-        </li>
-        <li>
+        <li v-bind:style="{ display: no_results_display }">
             <img
                 src="https://cyndiquil721.files.wordpress.com/2014/02/missingno.png"
                 alt="No results"
@@ -50,6 +37,9 @@
                 </h1>
             </div>
         </li>
+        
+        
+        
     </ul>
 </template>
 
@@ -65,15 +55,21 @@ export default {
         return {
             search: '',
             resultsJSON : {},
-            loader_display: 'none'
+            loader_display: 'none',
+            no_results_display: 'none',
+            pokemon_display: 'flex'
+            
         }
     }
     ,
     methods: {
-        change(){
+        searching(){ 
+            
+            // Handle pokemon display
+            this.pokemon_display = (this.search=="") ? 'none' : 'flex';
             
             // Loader ON
-            this.loader_display = 'block'
+            this.loader_display = 'block';
 
             fetch(URL_PATH).then(response => response.json()).then(
                 json =>{
@@ -87,6 +83,11 @@ export default {
 
                     // Join name and type results
                     let results = by_name.concat(by_type);
+
+                    // Handle 'No Result' display    
+                    this.no_results_display = (results.length==0) ? 'flex' : 'none';
+                    
+                    
 
                     //  Use the first 4 results
                     this.resultsJSON = results.slice(0,4);
@@ -108,23 +109,23 @@ export default {
             
                 return 0;  
             }  
-        }
-    },
-    computed: {
-        filteredList() {
-
-            return this.database.filter(pokemon => {
-                return pokemon.name.toLowerCase().includes(this.search.toLowerCase())
-            })
         },
+        highlight(poke_name){
+            
+            if (poke_name.toLowerCase().includes(this.search.toLowerCase()) && this.search.length != poke_name.length){
 
-        test(){
-            return 'test'
+                // Highlight the search string
+                let highlighted = poke_name.toLowerCase().replace(this.search,"<span class='hl'>"+this.search+"</span>");
+
+                // Capitalize and return
+                return highlighted.charAt(0).toUpperCase() + highlighted.slice(1)
+            }
+            else{
+                return poke_name;
+            }
+                   
         }
     },
-    created() {
-        
-    }
     
     
 };
