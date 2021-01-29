@@ -6,14 +6,28 @@
         </small>
     </label>
     <input type="text" class="input" placeholder="Pokemon or type" @input="change" v-model="search" />
-    <div class="loader"></div>
+    <div class="loader" v-bind:style="{ display: loader_display }"></div>
     <ul class="suggestions">
 
-        /*  ===== start */
+        
+        <div v-for="poke in resultsJSON" v-bind:key="poke">
+            
+            <li>
+                <img
+                    v-bind:src="poke.img"
+                />
+                <div class="info">
+                    <h1>{{poke.Name}}</h1>
+                    <span v-for="type in poke.Types" v-bind:key="type">
+                        <span :class="['type ' + type.toLowerCase()]">{{type}}</span>
+                    </span>
+                </div>
+
+            </li>
+        </div>
         
         
         
-        /*  ===== end */
         <li>
             <img
                 src="http://assets.pokemon.com/assets/cms2/img/pokedex/full/025.png"
@@ -50,38 +64,50 @@ export default {
     data () {
         return {
             search: '',
-            resultsJSON : {} 
+            resultsJSON : {},
+            loader_display: 'none'
         }
     }
     ,
     methods: {
         change(){
-            console.log(this.search);
             
-            // Return a function 
-            console.log(this.test);
+            // Loader ON
+            this.loader_display = 'block'
 
-            console.log('fetching');
             fetch(URL_PATH).then(response => response.json()).then(
                 json =>{
-                    // filter this.database by this.search
 
+                    // Find by name and by type
                     let by_name = json.filter(poke => poke.Name.toLowerCase().includes(this.search.toLowerCase()));
-                    
                     let by_type = json.filter(poke => poke.Types.findIndex(e => e.toLowerCase().includes(this.search.toLowerCase()))!=-1);
                     
+                    // Sort by_name
+                    by_name = by_name.sort(this.sortByProp('Name'));
 
+                    // Join name and type results
                     let results = by_name.concat(by_type);
-                    console.log(results);
 
-                    this.resultsJSON = results;
-
-                    // final step return results
-                    this.database = json
-                    //console.log(this.database)
+                    //  Use the first 4 results
+                    this.resultsJSON = results.slice(0,4);
                     
+                    console.log(this.resultsJSON);   
+                    
+                    // Loader OFF
+                    this.loader_display = 'none'
+                        
                 }
             )
+        },
+        sortByProp(prop){  
+            return function(a,b){  
+                if(a[prop] > b[prop])  
+                    return 1;  
+                else if(a[prop] < b[prop])  
+                    return -1;  
+            
+                return 0;  
+            }  
         }
     },
     computed: {
