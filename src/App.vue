@@ -1,6 +1,6 @@
 <template>
     <label for="maxCP" class="max-cp">
-        <input type="checkbox" id="maxCP" />
+        <input type="checkbox" id="maxCP"/>
         <small>
             Maximum Combat Points
         </small>
@@ -87,8 +87,6 @@ export default {
                     // Handle 'No Result' display    
                     this.no_results_display = (results.length==0) ? 'flex' : 'none';
                     
-                    
-
                     //  Use the first 4 results
                     this.resultsJSON = results.slice(0,4);
                     
@@ -125,6 +123,7 @@ export default {
             }
                    
         }
+        
     },
     
     
