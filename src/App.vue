@@ -110,10 +110,22 @@ export default {
         },
         highlight(poke_name){
             
+            console.log(poke_name.toLowerCase());
+            console.log(this.search.toLowerCase());
+            console.log(poke_name.toLowerCase().includes(this.search.toLowerCase()) && this.search.length != poke_name.length);
             if (poke_name.toLowerCase().includes(this.search.toLowerCase()) && this.search.length != poke_name.length){
 
+
+                // Capitalize the first letter if the search string matches the start of poke_name
+                if (poke_name[0].toLowerCase()==this.search[0].toLowerCase()){
+                    this.search = this.search.charAt(0).toUpperCase() + this.search.slice(1);
+                }
+                else{
+                    this.search = this.search.toLowerCase()
+                }
+                
                 // Highlight the search string
-                let highlighted = poke_name.toLowerCase().replace(this.search,"<span class='hl'>"+this.search+"</span>");
+                let highlighted = poke_name.toLowerCase().replace(this.search.toLowerCase(),"<span class='hl'>"+this.search+"</span>");
 
                 // Capitalize and return
                 return highlighted.charAt(0).toUpperCase() + highlighted.slice(1)
