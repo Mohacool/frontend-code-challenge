@@ -1,6 +1,6 @@
 <template>
     <label for="maxCP" class="max-cp">
-        <input type="checkbox" id="maxCP"/>
+        <input type="checkbox" id="maxCP" @change="sortbycp"/>
         <small>
             Maximum Combat Points
         </small>
@@ -90,7 +90,7 @@ export default {
                     //  Use the first 4 results
                     this.resultsJSON = results.slice(0,4);
                     
-                    console.log(this.resultsJSON);   
+                   // console.log(this.resultsJSON);   
                     
                     // Loader OFF
                     this.loader_display = 'none'
@@ -110,30 +110,34 @@ export default {
         },
         highlight(poke_name){
             
-            console.log(poke_name.toLowerCase());
-            console.log(this.search.toLowerCase());
-            console.log(poke_name.toLowerCase().includes(this.search.toLowerCase()) && this.search.length != poke_name.length);
-            if (poke_name.toLowerCase().includes(this.search.toLowerCase()) && this.search.length != poke_name.length){
+            if (this.search.length>0){
+                if (poke_name.toLowerCase().includes(this.search.toLowerCase()) && this.search.length != poke_name.length){
 
 
-                // Capitalize the first letter if the search string matches the start of poke_name
-                if (poke_name[0].toLowerCase()==this.search[0].toLowerCase()){
-                    this.search = this.search.charAt(0).toUpperCase() + this.search.slice(1);
+                    // Capitalize the first letter if the search string matches the start of poke_name
+                    if (poke_name[0].toLowerCase()==this.search[0].toLowerCase()){
+                        this.search = this.search.charAt(0).toUpperCase() + this.search.slice(1);
+                    }
+                    else{
+                        this.search = this.search.toLowerCase()
+                    }
+                    
+                    // Highlight the search string
+                    let highlighted = poke_name.toLowerCase().replace(this.search.toLowerCase(),"<span class='hl'>"+this.search+"</span>");
+
+                    // Capitalize and return
+                    return highlighted.charAt(0).toUpperCase() + highlighted.slice(1)
                 }
                 else{
-                    this.search = this.search.toLowerCase()
+                    return poke_name;
                 }
-                
-                // Highlight the search string
-                let highlighted = poke_name.toLowerCase().replace(this.search.toLowerCase(),"<span class='hl'>"+this.search+"</span>");
-
-                // Capitalize and return
-                return highlighted.charAt(0).toUpperCase() + highlighted.slice(1)
             }
-            else{
-                return poke_name;
-            }
+            
                    
+        },
+        sortbycp(){
+            let sorted = this.resultsJSON.sort(this.sortByProp('MaxCP'));
+            this.resultsJSON = sorted;
         }
         
     },
